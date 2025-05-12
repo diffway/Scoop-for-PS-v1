@@ -813,13 +813,11 @@ function link_current($versiondir) {
     }
 
     if (Test-Path $currentdir) {
-        # remove the junction
-        Set-ItemProperty $currentdir -name IsReadOnly -value false
         Remove-Item $currentdir -Recurse -Force -ErrorAction Stop
     }
 
     New-DirectoryJunction $currentdir $versiondir | Out-Null
-    Set-ItemProperty $currentdir -name IsReadOnly -value true
+
     return $currentdir
 }
 
@@ -834,9 +832,6 @@ function unlink_current($versiondir) {
 
     if (Test-Path $currentdir) {
         Write-Host "Unlinking $(friendly_path $currentdir)"
-
-        # remove read-only attribute on link
-        Set-ItemProperty $currentdir -name IsReadOnly -value false
 
         # remove the junction
         Remove-Item $currentdir -Recurse -Force -ErrorAction Stop
@@ -1051,7 +1046,6 @@ function persist_data($manifest, $original_dir, $persist_dir) {
             if (is_directory $target) {
                 # target is a directory, create junction
                 New-DirectoryJunction $source $target | Out-Null
-                Set-ItemProperty $source -name IsReadOnly -value true
             } else {
                 # target is a file, create hard link
                 New-Item -Path $source -ItemType HardLink -Value $target | Out-Null
@@ -1071,8 +1065,6 @@ function unlink_persist_data($manifest, $dir) {
                 $source_path = $source.FullName
                 # directory (junction)
                 if ($source -is [System.IO.DirectoryInfo]) {
-                    # remove read-only attribute on the link
-                    Set-ItemProperty $source_path -name IsReadOnly -value false
                     # remove the junction
                     Remove-Item -Path $source_path -Recurse -Force -ErrorAction SilentlyContinue
                 } else {

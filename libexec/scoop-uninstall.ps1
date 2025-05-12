@@ -116,8 +116,6 @@ if (!$apps) { exit 0 }
         }
     }
     if (Test-Path ($currentDir = Join-Path $appDir 'current')) {
-        # remove read-only attribute on the link
-        Set-ItemProperty $currentDir -name IsReadOnly -value false
         # remove the junction
         Remove-Item $currentDir -ErrorAction Stop -Force
     }

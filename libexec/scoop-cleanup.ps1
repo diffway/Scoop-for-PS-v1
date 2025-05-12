@@ -51,8 +51,6 @@ function cleanup($app, $global, $verbose, $cache) {
     }
     $leftVersions = Get-ChildItem $appDir
     if ($leftVersions.Length -eq 1 -and $leftVersions.Name -eq 'current' -and $leftVersions.LinkType) {
-        # remove read-only attribute on the link
-        Set-ItemProperty $leftVersions.FullName -name IsReadOnly -value false
         # remove the junction
         Remove-Item $leftVersions.FullName -ErrorAction Stop -Force
         $leftVersions = $null
